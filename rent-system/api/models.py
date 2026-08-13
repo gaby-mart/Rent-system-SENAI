@@ -19,11 +19,12 @@ class User(AbstractUser):
 
 
 class Property(models.Model):
-    title = models.CharField()
+    # Correção: Adicionado max_length nos CharFields
+    title = models.CharField(max_length=255)
     property_type = models.CharField(max_length=100)
     rent_price = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.BooleanField(default=True)
-    address = models.CharField()
+    address = models.CharField(max_length=255)
     cep = models.CharField(max_length=9)
     complement = models.CharField(max_length=100, blank=True, null=True)
     neighborhood = models.CharField(max_length=100)
@@ -39,15 +40,25 @@ class Agreement(models.Model):
     end_date = models.DateField(blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.BooleanField(default=True)
+    
+    # Opcional, mas comum: Vincular o imóvel ao contrato
+    property = models.ForeignKey(
+        Property,
+        on_delete=models.PROTECT,
+        related_name="agreements",
+        null=True, blank=True # Remova o null/blank se o contrato SEMPRE precisar de um imóvel
+    )
+    
+    # Correção: Ajustado on_delete para PROTECT e related_name para nomes mais claros
     lessor = models.ForeignKey(
         User,
-        related_name="lessor",
-        on_delete=models.DO_NOTHING
+        related_name="lessor_agreements",
+        on_delete=models.PROTECT
     )
     renter = models.ForeignKey(
         User,
-        related_name="renter",
-        on_delete=models.DO_NOTHING
+        related_name="renter_agreements",
+        on_delete=models.PROTECT
     )
 
     def __str__(self):
@@ -57,11 +68,13 @@ class Agreement(models.Model):
 class Payment(models.Model):
     payment_date = models.DateField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    status = models.BooleanField()
+    status = models.BooleanField(default=False)
+    
+    # Correção: related_name alterado para 'payments'
     agreement = models.ForeignKey(
         Agreement,
-        on_delete=models.DO_NOTHING,
-        related_name="agreement"
+        on_delete=models.CASCADE,
+        related_name="payments"
     )
 
     def __str__(self):
