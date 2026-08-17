@@ -23,4 +23,5 @@ Os principais campos são:
 
 ### JWT
 - `https://django-rest-framework-simplejwt.readthedocs.io/en/latest/getting_started.html` -> Documentação Oficial Jwt Django
-- - `pip install djangorestframework-simplejwt` -> Instala o JWT
+- `pip install djangorestframework-simplejwt` -> Instala o JWT
+- `pip install djangorestframework-simplejwt[crypto]` -> Instalação das dependencias de criptografia
