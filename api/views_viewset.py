@@ -2,7 +2,14 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
+
 from django_filters.rest_framework import DjangoFilterBackend
+from django.http import HttpResponse
+from django.db.models import Count
+
+from io import BytesIO
+
+import matplotlib.pyplot as plt
 
 from .models import *
 from .serializers import *
@@ -28,7 +35,6 @@ class UserViewSet(ModelViewSet):
         ]
         return Response(names)
 
-
 class PropertyViewSet(ModelViewSet):
     queryset = Property.objects.all()
     serializer_class = PropertySerializer
@@ -47,6 +53,107 @@ class PropertyViewSet(ModelViewSet):
             for prop in properties
         ]
         return Response(list_titles)
+
+    @action(
+        detail=False,
+        methods=['get'],
+        permission_classes=[IsAdminUser]
+    )  
+    def graphic(self, request):
+        data = ( Property.objects.values("property_type").annotate(totals=Count("id"))
+        )
+
+        types = [item["property_type"]for item in data]
+
+        totals = [item['totals'] for item in data]
+
+        plt.bar(types, totals)
+        plt.title("Real estate Longitude")
+        plt.xlabel("Types")
+        plt.ylabel("amount")
+
+        image = BytesIO()
+        plt.savefig(image, format = "png")
+        plt.close()
+        image.seek(0)
+
+        return HttpResponse(image, content_type="image/png")
+
+    @action(
+            detail=False,
+            methods=['get'],
+            permission_classes=[IsAdminUser]
+        )  
+    def grafico(self, request):
+        data = ( Property.objects.values("property_type").annotate(totals=Count("id"))
+        )
+    
+        types = [item["property_type"]for item in data]
+    
+        totals = [item['totals'] for item in data]
+
+        fig, ax = plt.subplots()
+
+        bar_labels = ['pink', 'blue', 'purple']
+        bar_colors = ['tab:pink', 'tab:blue', 'tab:purple']
+
+        ax.bar(types, totals, label=bar_labels, color=bar_colors)
+
+        ax.set_ylabel('BRZ Real Estate')
+        ax.set_title('Properties supply by kind and color')
+        ax.legend(title='Types Properties color')
+        fig.tight_layout()
+
+        image = BytesIO()
+
+        fig.savefig(
+            image,
+            format='png'
+        )
+
+        plt.close(fig)
+
+        image.seek(0)
+
+        return HttpResponse(image.getvalue(), content_type="image/png")
+
+    @action(
+            detail=False,
+            methods=['get'],
+            permission_classes=[IsAdminUser]
+        )  
+    def grafico_pizza(self, request):
+        data = ( Property.objects.values("property_type").annotate(totals=Count("id"))
+        )
+    
+        types = [item["property_type"]for item in data]
+    
+        totals = [item['totals'] for item in data]
+
+        fig, ax = plt.subplots()
+
+        image = BytesIO()
+
+        ax.pie(
+        totals,
+        labels=types,
+        autopct='%1.1f%%',
+        colors=['pink', 'blue', 'purple']
+        )
+
+        ax.set_title('BRZ Real Estate')
+
+        fig.savefig(
+            image,
+            format='png'
+        )
+
+        plt.close(fig)
+
+        image.seek(0)
+
+        return HttpResponse(image.getvalue(), content_type="image/png")
+
 
 
 class AgreementViewSet(ModelViewSet):
