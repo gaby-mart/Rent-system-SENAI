@@ -7,8 +7,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 
-from .models import User, Property, Agreement, Payment
-from .serializers import UserSerializer, PropertySerializer, AgreementSerializer, PaymentSerializer
+from ..models import User, Property, Agreement, Payment
+from ..serializers import UserSerializer, PropertySerializer, AgreementSerializer, PaymentSerializer
 
 
 # CRUD Usuários

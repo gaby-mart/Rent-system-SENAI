@@ -1,0 +1,27 @@
+-- database: c:\Users\53661731831\Documents\PWBE\Rent-system-SENAI\rent-system\db.sqlite3
+
+SELECT * FROM api_property;
+
+INSERT INTO api_property(
+    title, 
+    property_type,
+    rent_price,
+    status,
+    address,
+    cep,
+    complement,
+    neighborhood,
+    city,
+    uf
+)VALUES(
+    'Casa na praia com 2 dormitórios',
+    'Casa',
+    2500,
+    1,
+    'Rua das Flores, 150',
+    '13181420',
+    'proximo ao GoodBom',
+    'Jardim das Palmeiras',
+    'Ubatuba',
+    'SP'
+);
